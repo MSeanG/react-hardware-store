@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import AdminView from './AdminView';
 
-import ShopProduct from './ShopView';
+import ShopView from './ShopView';
+import CartView from './CartView';
 
 class HomePage extends Component {
 
@@ -49,8 +50,33 @@ class HomePage extends Component {
     productList.splice(productkey, 1);
     this.setState({productList});
   }
+    _addProductToCart = (index) => {
+    const product = {...this.state.productList[index]};
+    const cartList = [...this.state.cartList];
+
+    cartList.push(product);
+
+    this.setState({cartList});
+  };
+
+  _removeProductFromCart = (index) => {
+    const cartList = [...this.state.cartList];
+
+    cartList.splice(index, 1);
+
+    this.setState({cartList});
+  };
 
   render() {
+    const adminView = <AdminView
+        productList={this.state.productList}
+        addNewProductToProductList={this._addNewProductToProductList}
+        deleteProductFromListByIndex={this._deleteProductFromListByIndex}/>;
+
+    const shopView = <ShopView
+        productList={this.state.productList}
+        addProductToCart={this._addProductToCart}/>;
+
     return (
       <div>
         <h1>My Hardware Store</h1>
@@ -72,10 +98,28 @@ class HomePage extends Component {
             </div>
             : null
           }
-          <AdminView 
-          productList={this.state.productList} 
-          addNewProductToProductList={this._addNewProductToProductList} deleteProductFromProductList={this._deleteProductFromProductList}/>
-          <ShopProduct />
+
+        </div>
+        <div>
+          <button onClick={this._toggleEditSaleItem}>
+            {this.state.editSaleItem
+                ? 'Hide'
+                : 'Edit Sale Item'}
+          </button>
+        </div>
+        <div>
+          <button onClick={this._toggleAdminView}>
+            {this.state.showAdminView
+                ? 'Show Shop View'
+                : 'Show Admin View'}
+          </button>
+        </div>
+        <div id="view-container">
+          {this.state.showAdminView ? adminView : shopView}
+
+          <CartView
+              productList={this.state.cartList}
+              removeProductFromCart={this._removeProductFromCart}/>
         </div>
       </div>
       
